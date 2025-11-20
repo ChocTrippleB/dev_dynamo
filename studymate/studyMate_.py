@@ -61,7 +61,8 @@ while True:
     # Call OpenAI Responses API
     response = client.responses.create(
         model="gpt-4.1-mini",
-        input=prompt
+        input=prompt,
+        temperature=0.3
     )
 
     # Get assistant's reply
