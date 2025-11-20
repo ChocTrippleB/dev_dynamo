@@ -3,14 +3,11 @@ import { createRoot } from 'react-dom/client'
 import { BrowserRouter } from 'react-router-dom'
 import './index.css'
 import App from './App.jsx'
-import { HeroUIProvider } from '@heroui/react'
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    <HeroUIProvider>
-      <BrowserRouter>
-        <App />
-      </BrowserRouter>
-    </HeroUIProvider>
+    <BrowserRouter>
+      <App />
+    </BrowserRouter>
   </StrictMode>,
 )

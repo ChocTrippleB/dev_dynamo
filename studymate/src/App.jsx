@@ -1,25 +1,44 @@
 import './App.css'
-import { Route, Routes } from 'react-router-dom'
+import { Route, Routes, Navigate } from 'react-router-dom'
 import Layout from './components/Layout'
-import StudyPlan from './pages/studyplan.jsx'
-import PastPapers from './pages/pastpapers.jsx'
+import ProtectedRoute from './components/ProtectedRoute'
+import StudyPlan from './pages/StudyPlan.jsx'
+import PastPapers from './pages/PastPapers.jsx'
 import Register from './pages/auth/Register.jsx'
 import Login from './pages/auth/Login.jsx'
-import Settings from './pages/settings.jsx'
-import Home from './pages/home.jsx'
+import Settings from './pages/Settings.jsx'
+import Profile from './pages/Profile.jsx'
+import Home from './pages/Home.jsx'
+import LandingPage from './pages/LandingPage.jsx'
+import { storage } from './utils/storage'
 
 function App() {
+  const isAuthenticated = storage.isAuthenticated()
+
   return (
     <Routes>
+      {/* Landing Page - Public */}
+      <Route path="/landing" element={<LandingPage />} />
+
       {/* Auth routes - no layout */}
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
 
-      {/* Main app routes - with layout */}
-      <Route path="/" element={<Layout><Home /></Layout>} />
-      <Route path="/study-plan" element={<Layout><StudyPlan /></Layout>} />
-      <Route path="/past-papers" element={<Layout><PastPapers /></Layout>} />
-      <Route path="/settings" element={<Layout><Settings /></Layout>} />
+      {/* Root route - redirect based on auth status */}
+      <Route path="/" element={
+        isAuthenticated ? (
+          <Navigate to="/home" replace />
+        ) : (
+          <Navigate to="/landing" replace />
+        )
+      } />
+
+      {/* Main app routes - with layout and auth protection */}
+      <Route path="/home" element={<ProtectedRoute><Layout><Home /></Layout></ProtectedRoute>} />
+      <Route path="/study-plan" element={<ProtectedRoute><Layout><StudyPlan /></Layout></ProtectedRoute>} />
+      <Route path="/past-papers" element={<ProtectedRoute><Layout><PastPapers /></Layout></ProtectedRoute>} />
+      <Route path="/profile" element={<ProtectedRoute><Layout><Profile /></Layout></ProtectedRoute>} />
+      <Route path="/settings" element={<ProtectedRoute><Layout><Settings /></Layout></ProtectedRoute>} />
     </Routes>
   )
 }
