@@ -1,9 +1,9 @@
 import React from 'react'
 
-const pastpapers = () => {
+const PastPapers = () => {
   return (
     <div>pastpapers</div>
   )
 }
 
-export default pastpapers
+export default PastPapers

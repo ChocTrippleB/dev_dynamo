@@ -1,9 +1,9 @@
 import React from 'react'
 
-const studyplan = () => {
+const StudyPlan = () => {
   return (
     <div>studyplan</div>
   )
 }
 
-export default studyplan
+export default StudyPlan
