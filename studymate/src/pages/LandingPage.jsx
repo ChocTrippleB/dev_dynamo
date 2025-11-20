@@ -91,12 +91,13 @@ export default function LandingPage() {
         </div>
       </main>
 
-
+<img src="/chat.png" alt="Chat Icon" className="w-76 h-76 mr-2" />
       <button
         onClick={handleLaunchApp}
         className="fixed bottom-8 right-8 p-4 bg-indigo-600 hover:bg-indigo-700 text-white rounded-full shadow-2xl transition-transform hover:scale-110 z-50 flex items-center justify-center group"
         aria-label="Open Chat"
       >
+        <img src="/chat.png" alt="Chat Icon" className="w-76 h-76 mr-2" />
         <MessageCircle size={28} className="group-hover:animate-pulse" />
       </button>
 
