@@ -1,0 +1,11 @@
+tailwindcss
+lucide
+npm
+
+
+
+
+npm install tailwindcss @tailwindcss/vite
+npm install lucide
+npm install
+
