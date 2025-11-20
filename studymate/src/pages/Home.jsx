@@ -1,32 +1,110 @@
-import React, { useEffect, useRef } from 'react';
-import { 
-  BookOpen, 
-  Mic, 
-  MicOff, 
-  Send, 
-  Volume2, 
+import React, { useState, useEffect, useRef } from 'react';
+import {
+  BookOpen,
+  Mic,
+  MicOff,
+  Send,
+  Volume2,
   Loader,
 } from 'lucide-react';
 
-export default function Home({ 
-  messages, 
-  isLoading, 
-  handleSend, 
-  input, 
-  setInput, 
-  isListening, 
-  toggleListening 
-}) {
+const API_KEY = "" // Add your OpenAI API key here
+
+export default function Home() {
+  const [input, setInput] = useState("")
+  const [isLoading, setIsLoading] = useState(false)
+  const [isListening, setIsListening] = useState(false)
+  const [messages, setMessages] = useState([])
+  const recognitionRef = useRef(null)
   const messagesEndRef = useRef(null);
+
+  // Voice recognition setup
+  useEffect(() => {
+    if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition
+      recognitionRef.current = new SpeechRecognition()
+      recognitionRef.current.continuous = false
+      recognitionRef.current.interimResults = false
+      recognitionRef.current.lang = 'en-ZA'
+
+      recognitionRef.current.onresult = (event) => {
+        const transcript = event.results[0][0].transcript
+        setInput((prev) => (prev ? prev + " " + transcript : transcript))
+        setIsListening(false)
+      }
+
+      recognitionRef.current.onerror = () => {
+        setIsListening(false)
+      }
+
+      recognitionRef.current.onend = () => {
+        setIsListening(false)
+      }
+    }
+  }, [])
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
+  const toggleListening = () => {
+    if (!recognitionRef.current) {
+      alert("Voice recognition is not supported in this browser. Try Chrome.")
+      return
+    }
+
+    if (isListening) {
+      recognitionRef.current.stop()
+      setIsListening(false)
+    } else {
+      recognitionRef.current.start()
+      setIsListening(true)
+    }
+  }
+
+  const callOpenAI = async (messages) => {
+    if (!API_KEY) return "⚠️ Please add your OpenAI API Key at the top of Home.jsx to use the AI chat."
+    try {
+      const response = await fetch("https://api.openai.com/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${API_KEY}`
+        },
+        body: JSON.stringify({
+          model: "gpt-3.5-turbo",
+          messages: [
+            { role: "system", content: "You are StudyMate, a helpful South African tutor for Matric students." },
+            ...messages
+          ]
+        })
+      })
+      const data = await response.json()
+      return data.choices?.[0]?.message?.content || "Error getting response."
+    } catch (error) {
+      console.error(error)
+      return "Error connecting to the server."
+    }
+  }
+
+  const handleSend = async () => {
+    if (!input.trim()) return
+    const userMsg = { role: 'user', content: input }
+    const updatedMessages = [...messages, userMsg]
+    setMessages(updatedMessages)
+    setInput("")
+    setIsLoading(true)
+
+    const aiText = await callOpenAI(updatedMessages)
+    const aiMsg = { role: 'assistant', content: aiText }
+    setMessages([...updatedMessages, aiMsg])
+    setIsLoading(false)
+  }
+
   return (
-    <div className="flex flex-col h-full w-full bg-gray-900 text-white relative">
+    <div className="flex flex-col h-[calc(100vh-64px)] w-full bg-gray-900 text-white relative">
       {/* Chat Header */}
-      <div className="bg-gray-800 border-b border-gray-700 p-4 flex justify-between items-center shadow-sm shrink-0 h-16 z-10">
+      <div className="bg-gray-800 border border-gray-700 rounded-lg p-4 flex justify-between items-center shadow-sm shrink-0 mb-4">
         <div>
           <h2 className="font-bold text-white text-lg">AI Tutor Session</h2>
           <p className="text-xs text-gray-400">Asking about: <span className="text-indigo-400 font-medium">General / All Subjects</span></p>
@@ -40,7 +118,7 @@ export default function Home({
       </div>
 
       {/* Messages Area */}
-      <div className="flex-1 p-4 bg-gray-900 space-y-6 w-full pb-32">
+      <div className="flex-1 overflow-y-auto space-y-6 w-full pb-32 px-4">
         {messages.length === 0 && (
           <div className="flex flex-col items-center justify-center h-full text-gray-400 space-y-4 mt-[-50px]">
             <div className="p-6 bg-gray-800 rounded-full shadow-sm border border-gray-700">
@@ -100,8 +178,8 @@ export default function Home({
       </div>
 
       {/* Input Area - Fixed at bottom */}
-      <div className="absolute bottom-0 left-0 right-0 p-4 z-20">
-        <div className="max-w-4xl mx-auto flex items-end space-x-2 bg-gray-700 p-2 rounded-3xl border border-gray-600 focus-within:ring-2 focus-within:ring-indigo-500 focus-within:bg-gray-800 transition-all shadow-inner">
+      <div className="absolute bottom-0 left-0 right-0 p-6 z-20 bg-gradient-to-t from-gray-900 via-gray-900 to-transparent">
+        <div className="max-w-4xl mx-auto flex items-end space-x-2 bg-gray-700 p-2 rounded-3xl border border-gray-600 focus-within:ring-2 focus-within:ring-indigo-500 focus-within:bg-gray-800 transition-all shadow-lg">
           <button 
             onClick={toggleListening}
             className={`p-3 rounded-full transition-all flex-shrink-0 border-none shadow-none cursor-pointer ${isListening ? 'bg-red-500 text-white animate-pulse' : 'bg-transparent text-gray-400 hover:text-white hover:bg-gray-600/50'}`}

@@ -1,15 +1,17 @@
 import React, { useState } from 'react';
 import { Loader, CheckCircle } from 'lucide-react';
 
-export default function StudyPlan({ apiKey }) {
+const API_KEY = "" // Add your OpenAI API key here
+
+export default function StudyPlan() {
     const [step, setStep] = useState(1);
     const [loading, setLoading] = useState(false);
     const [plan, setPlan] = useState(null);
     const [formData, setFormData] = useState({ subjects: "", date: "", weakSpots: "" });
 
     const generatePlan = async () => {
-      if (!apiKey) {
-        alert("Please add your API Key in App.jsx first!");
+      if (!API_KEY) {
+        alert("Please add your API Key at the top of StudyPlan.jsx first!");
         return;
       }
 
@@ -20,7 +22,7 @@ export default function StudyPlan({ apiKey }) {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            "Authorization": `Bearer ${apiKey}`
+            "Authorization": `Bearer ${API_KEY}`
           },
           body: JSON.stringify({
             model: "gpt-3.5-turbo",
@@ -53,9 +55,9 @@ export default function StudyPlan({ apiKey }) {
     };
 
     return (
-      <div className="p-6 w-full h-full overflow-y-auto bg-gray-900 text-white">
-        <div className="mb-8 text-center">
-          <h1 className="text-4xl font-bold text-white mb-2">Study Planner Generator</h1>
+      <div className="w-full max-w-6xl mx-auto">
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-white mb-2">Study Planner Generator</h1>
           <p className="text-gray-400">Tell me your exam dates, and I'll build a schedule that works.</p>
         </div>
 

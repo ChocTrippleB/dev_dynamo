@@ -1,8 +1,27 @@
 import React from 'react';
-//import { useNavigate, useLocation, } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { MessageCircle, ArrowRight, BookOpen, Calendar, CheckCircle, Zap } from 'lucide-react';
+import { storage } from '../utils/storage';
 
-export default function LandingPage({ onOpenApp }) {
+export default function LandingPage() {
+  const navigate = useNavigate();
+  const isAuthenticated = storage.isAuthenticated();
+
+  const handleGetStarted = () => {
+    if (isAuthenticated) {
+      navigate('/home');
+    } else {
+      navigate('/register');
+    }
+  };
+
+  const handleLaunchApp = () => {
+    if (isAuthenticated) {
+      navigate('/home');
+    } else {
+      navigate('/login');
+    }
+  };
   return (
     <div className="min-h-screen  bg-gray-900 text-white font-sans flex flex-col relative overflow-hidden">
       {/* Navbar */}
@@ -13,8 +32,8 @@ export default function LandingPage({ onOpenApp }) {
           </div>
           <span className="text-2xl font-bold tracking-tight">StudyMate</span>
         </div>
-        <button 
-            onClick={onOpenApp}
+        <button
+            onClick={handleLaunchApp}
             className="text-sm font-medium text-gray-300 hover:text-white transition-colors"
         >
           Launch App
@@ -41,8 +60,8 @@ export default function LandingPage({ onOpenApp }) {
         
         {/* Call to Action */}
         <div className="flex flex-col sm:flex-row gap-4">
-            <button 
-            onClick={onOpenApp}
+            <button
+            onClick={handleGetStarted}
             className="px-8 py-4 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold text-lg transition-all shadow-lg shadow-indigo-900/50 flex items-center justify-center gap-2 transform hover:scale-105"
             >
             Start Learning Now <ArrowRight size={20} />
@@ -72,12 +91,13 @@ export default function LandingPage({ onOpenApp }) {
         </div>
       </main>
 
-      
+<img src="/chat.png" alt="Chat Icon" className="w-76 h-76 mr-2" />
       <button
-        onClick={onOpenApp}
+        onClick={handleLaunchApp}
         className="fixed bottom-8 right-8 p-4 bg-indigo-600 hover:bg-indigo-700 text-white rounded-full shadow-2xl transition-transform hover:scale-110 z-50 flex items-center justify-center group"
         aria-label="Open Chat"
       >
+        <img src="/chat.png" alt="Chat Icon" className="w-76 h-76 mr-2" />
         <MessageCircle size={28} className="group-hover:animate-pulse" />
       </button>
 
