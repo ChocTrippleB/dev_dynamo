@@ -123,9 +123,7 @@ def chat():
 
     messages = data.get("messages", [])
     language = data.get("language", "english")
-    difficulty = data.get("difficulty", "medium")
-    user_name = data.get("userName", "Student")
-
+    
     # Pick behavior for this language
     prompt_agent = get_prompt_agent(language)
 
@@ -137,22 +135,7 @@ def chat():
         if role in ("user", "assistant"):
             conversation_history.append({"role": role, "content": content})
 
-    # Add user context to personalize responses
-    user_context = f"\n\nUser Context:\n"
-    user_context += f"- Student Name: {user_name}\n"
-    user_context += f"- Difficulty Level: {difficulty}\n\n"
-
-    # Add difficulty-specific instructions
-    if difficulty == "easy":
-        user_context += "Instructions: Use simple language, break down concepts step-by-step, and provide plenty of examples. Avoid complex terminology.\n"
-    elif difficulty == "hard":
-        user_context += "Instructions: Use advanced terminology, provide in-depth explanations, challenge with complex concepts, and expect higher understanding.\n"
-    else:  # medium (default)
-        user_context += "Instructions: Use clear explanations with moderate detail, relevant examples, and balanced complexity.\n"
-
-    user_context += f"Address the student as {user_name} when appropriate.\n\n"
-
-    prompt = prompt_agent.name + "\n" + prompt_agent.instruction + user_context
+    prompt = prompt_agent.name + "\n" + prompt_agent.instruction + "\n"
     for msg in conversation_history:
         prompt += f"{msg['role'].capitalize()}: {msg['content']}\n"
 
