@@ -221,8 +221,6 @@ const Register = () => {
                       className="w-full bg-transparent border border-gray-700 rounded-lg px-4 py-3 text-white focus:border-gray-700 focus:outline-none transition-colors"
                     >
                       <option value="" className="bg-gray-800">Select your grade</option>
-                      <option value="10" className="bg-gray-800">Grade 10</option>
-                      <option value="11" className="bg-gray-800">Grade 11</option>
                       <option value="12" className="bg-gray-800">Grade 12</option>
                     </select>
                   </div>
