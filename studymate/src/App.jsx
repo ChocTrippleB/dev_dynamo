@@ -18,7 +18,7 @@ function App() {
   return (
     <Routes>
       {/* Landing Page - Public */}
-      <Route path="/landing" element={<LandingPage />} />
+      <Route path="/" element={<LandingPage />} />
 
       {/* Auth routes - no layout */}
       <Route path="/login" element={<Login />} />
