@@ -123,9 +123,15 @@ def chat():
 
     messages = data.get("messages", [])
     language = data.get("language", "english")
+    difficulty = data.get("difficulty", "medium")
+    user_name = data.get("userName", "Student")
+    user_Details = "User name is: " + user_name + "\nthe dificulty leve for generating practice questions is: " + difficulty
 
     # Pick behavior for this language
     prompt_agent = get_prompt_agent(language)
+
+    #updating the prompt language to append the user name 
+    prompt_agent = "System name: " + prompt_agent + "\n" + user_Details
 
     # Build conversation history string
     conversation_history = []
