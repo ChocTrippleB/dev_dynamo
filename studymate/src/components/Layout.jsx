@@ -1,6 +1,6 @@
 import React from 'react'
 import { NavLink, useNavigate } from 'react-router-dom'
-import { Home, BookOpen, FileText, User, Settings, LogOut, MessageCircle } from 'lucide-react'
+import { Home, BookOpen, FileText, User, Settings, LogOut, MessageCircle, GraduationCap } from 'lucide-react'
 import { storage } from '../utils/storage'
 
 const Layout = ({ children }) => {
@@ -25,7 +25,10 @@ const Layout = ({ children }) => {
       {/* Sidebar */}
       <aside className="w-64 bg-gray-900 border-r border-gray-800 fixed h-full flex flex-col shadow-xl">
         <div className="p-6 flex-1">
-          <h1 className="text-2xl font-bold text-white mb-8">StudyMate</h1>
+          <h1 className="flex items-center gap-2 text-2xl font-bold text-white mb-8">
+            <GraduationCap className="w-7 h-7 text-white" />
+            StudyMate
+          </h1>
 
           <nav className="space-y-2">
             {navItems.map((item) => (

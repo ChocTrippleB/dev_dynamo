@@ -28,7 +28,7 @@ const Login = () => {
     const result = storage.login(formData.email, formData.password)
 
     if (result.success) {
-      navigate('/')
+      navigate('/chat')
     } else {
       setError(result.error || 'Login failed')
     }
