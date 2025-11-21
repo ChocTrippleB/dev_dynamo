@@ -27,14 +27,14 @@ function App() {
       {/* Root route - redirect based on auth status */}
       <Route path="/" element={
         isAuthenticated ? (
-          <Navigate to="/home" replace />
+          <Navigate to="/chat" replace />
         ) : (
           <Navigate to="/landing" replace />
         )
       } />
 
       {/* Main app routes - with layout and auth protection */}
-      <Route path="/home" element={<ProtectedRoute><Layout><Home /></Layout></ProtectedRoute>} />
+      <Route path="/chat" element={<ProtectedRoute><Layout><Home /></Layout></ProtectedRoute>} />
       <Route path="/study-plan" element={<ProtectedRoute><Layout><StudyPlan /></Layout></ProtectedRoute>} />
       <Route path="/past-papers" element={<ProtectedRoute><Layout><PastPapers /></Layout></ProtectedRoute>} />
       <Route path="/profile" element={<ProtectedRoute><Layout><Profile /></Layout></ProtectedRoute>} />

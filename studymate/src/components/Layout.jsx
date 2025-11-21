@@ -1,6 +1,6 @@
 import React from 'react'
 import { NavLink, useNavigate } from 'react-router-dom'
-import { Home, BookOpen, FileText, User, Settings, LogOut } from 'lucide-react'
+import { Home, BookOpen, FileText, User, Settings, LogOut, MessageCircle } from 'lucide-react'
 import { storage } from '../utils/storage'
 
 const Layout = ({ children }) => {
@@ -8,6 +8,7 @@ const Layout = ({ children }) => {
 
   const navItems = [
     { path: '/', icon: Home, label: 'Home' },
+    { path: '/chat', icon: MessageCircle, label: 'Chat' },
     { path: '/study-plan', icon: BookOpen, label: 'Study Plan' },
     { path: '/past-papers', icon: FileText, label: 'Past Papers' },
     { path: '/profile', icon: User, label: 'Profile' },

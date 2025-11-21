@@ -9,7 +9,7 @@ export default function LandingPage() {
 
   const handleGetStarted = () => {
     if (isAuthenticated) {
-      navigate('/home');
+      navigate('/');
     } else {
       navigate('/register');
     }
@@ -17,7 +17,7 @@ export default function LandingPage() {
 
   const handleLaunchApp = () => {
     if (isAuthenticated) {
-      navigate('/home');
+      navigate('/chat');
     } else {
       navigate('/login');
     }
