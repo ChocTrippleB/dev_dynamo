@@ -1,7 +1,7 @@
 // Central API service for all backend calls
 
 // Base URL - change this to your production URL when deploying
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://127.0.0.1:5000';
+const API_BASE_URL = 'http://127.0.0.1:5000';
 
 /**
  * Generic API call function with error handling
@@ -41,7 +41,7 @@ const apiCall = async (endpoint, options = {}) => {
  * @returns {Promise} Response with AI reply
  */
 export const sendChatMessage = async (messages, language = 'english', difficulty = 'medium', userName = 'Student') => {
-  return apiCall('/api/chat', {
+  return apiCall('/chat', {
     method: 'POST',
     body: JSON.stringify({
       messages,

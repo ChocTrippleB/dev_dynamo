@@ -7,7 +7,7 @@ export const RESOURCES = [
     year: 2023,
     label: 'Mathematics Paper 1 – 2023 (NSC)',
     description: 'Algebra, functions, trigonometry, calculus.',
-    url: 'https://www.education.gov.za/Portals/0/Documents/Publications/MATHEMATICS%20P1%20GR%2012%20NOV%202023%20ENGLISH.pdf'
+    url: 'https://stanmorephysics.com/wp-content/uploads/2023/11/NSC-Maths-Grade-12-November-2023-P1-only.pdf'
   },
   // {
   //   id: 'maths-2022-p1',
@@ -24,7 +24,7 @@ export const RESOURCES = [
     subject: 'Mathematics',
     label: 'Mathematics Study Guide – Grade 12',
     description: 'Revision notes & worked examples for CAPS Maths.',
-    url: 'https://www.education.gov.za/Portals/0/Documents/Publications/Mathematics%20Gr12%20Web.pdf'
+    url: 'https://wozamatrics.co.za/wp-content/uploads/2020/10/MTG-Math-Gr-12-Web.pdf'
   },
 
   // Physical Sciences
