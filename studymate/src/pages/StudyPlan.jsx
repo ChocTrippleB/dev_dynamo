@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Loader, CheckCircle, Trash2 } from 'lucide-react';
+import { generateStudyPlan } from '../utils/api';
 
 export default function StudyPlan() {
     const [step, setStep] = useState(1);
@@ -33,25 +34,22 @@ export default function StudyPlan() {
     const generatePlan = async () => {
       setLoading(true);
 
-      // TODO: Replace this with actual backend API call
-      // Example backend call:
-      // const response = await fetch('/api/study-plan/generate', {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify(formData)
-      // });
-      // const data = await response.json();
+      // Call centralized API
+      const result = await generateStudyPlan(formData);
 
-      // Simulate API delay
-      setTimeout(() => {
-        // Mock plan generation for UI testing
-        // Backend should return array of days with format: { day: number, content: string, completed: boolean }
+      if (result.success && result.data.plan) {
+        // Backend returns { plan: [{day, content, completed}, ...] }
+        setPlan(result.data.plan);
+        setStep(2);
+      } else {
+        // Fallback to mock data if API fails (for development/testing)
+        console.warn('API call failed, using mock data:', result.error);
         const mockPlan = generateMockPlan(formData);
-
         setPlan(mockPlan);
         setStep(2);
-        setLoading(false);
-      }, 1500);
+      }
+
+      setLoading(false);
     };
 
     // Mock function to generate sample plan (remove when backend is ready)
@@ -147,17 +145,11 @@ export default function StudyPlan() {
                 >
                   <option value="" disabled>Select your subject...</option>
                   <option value="Mathematics">Mathematics</option>
-                  <option value="Mathematical Literacy">Mathematical Literacy</option>
                   <option value="Physical Sciences">Physical Sciences</option>
                   <option value="Life Sciences">Life Sciences</option>
                   <option value="Accounting">Accounting</option>
                   <option value="Business Studies">Business Studies</option>
-                  <option value="Economics">Economics</option>
-                  <option value="History">History</option>
                   <option value="Geography">Geography</option>
-                  <option value="English HL">English HL</option>
-                  <option value="IsiZulu HL">IsiZulu HL</option>
-                  <option value="Afrikaans FAL">Afrikaans FAL</option>
                 </select>
             </div>
 

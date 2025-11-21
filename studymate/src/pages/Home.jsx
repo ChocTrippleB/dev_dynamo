@@ -7,6 +7,8 @@ import {
   Volume2,
   Loader,
 } from 'lucide-react';
+import { sendChatMessage } from '../utils/api';
+import { storage } from '../utils/storage';
 
 export default function Home() {
   const [input, setInput] = useState("");
@@ -14,8 +16,14 @@ export default function Home() {
   const [isListening, setIsListening] = useState(false);
   const [messages, setMessages] = useState([]);
 
+  // Get user data from localStorage
+  const userProfile = storage.getProfile();
+  const userSettings = storage.getSettings();
+  const userName = userProfile?.name || 'Student';
+  const difficulty = userSettings?.difficulty || 'medium';
+
   // language state
-  const [language, setLanguage] = useState("english");
+  const [language, setLanguage] = useState(userSettings?.language || "english");
 
   const recognitionRef = useRef(null);
   const messagesEndRef = useRef(null);
@@ -64,34 +72,6 @@ export default function Home() {
     }
   };
 
-  //call backend instead of OpenAI directly
-  const callBackend = async (messagesToSend) => {
-    try {
-      const response = await fetch("http://127.0.0.1:5000/chat", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          messages: messagesToSend,
-          language: language, // pass selected language
-        }),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        console.error("Backend error:", data);
-        return data.error || "Error getting response from server.";
-      }
-
-      return data.reply || "No reply from AI.";
-    } catch (error) {
-      console.error("Network error:", error);
-      return "Error connecting to the server." + error;
-    }
-  };
-
   const handleSend = async () => {
     if (!input.trim()) return;
     const userMsg = { role: 'user', content: input };
@@ -100,8 +80,16 @@ export default function Home() {
     setInput("");
     setIsLoading(true);
 
-    // Use backend instead of callOpenAI
-    const aiText = await callBackend(updatedMessages);
+    // Call centralized API with user context
+    const result = await sendChatMessage(updatedMessages, language, difficulty, userName);
+
+    let aiText;
+    if (result.success) {
+      aiText = result.data.reply || "No reply from AI.";
+    } else {
+      aiText = result.error || "Error connecting to the server.";
+    }
+
     const aiMsg = { role: 'assistant', content: aiText };
     setMessages([...updatedMessages, aiMsg]);
     setIsLoading(false);

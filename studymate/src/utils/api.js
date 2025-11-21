@@ -36,12 +36,19 @@ const apiCall = async (endpoint, options = {}) => {
  * Chat API - Send messages to AI tutor
  * @param {Array} messages - Array of message objects with role and content
  * @param {string} language - Language preference (english, zulu, xhosa)
+ * @param {string} difficulty - Difficulty level (easy, medium, hard)
+ * @param {string} userName - User's name for personalization
  * @returns {Promise} Response with AI reply
  */
-export const sendChatMessage = async (messages, language = 'english') => {
+export const sendChatMessage = async (messages, language = 'english', difficulty = 'medium', userName = 'Student') => {
   return apiCall('/api/chat', {
     method: 'POST',
-    body: JSON.stringify({ messages, language }),
+    body: JSON.stringify({
+      messages,
+      language,
+      difficulty,
+      userName
+    }),
   });
 };
 
