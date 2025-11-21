@@ -1,7 +1,7 @@
 from .behavior_Obj import behavior
 
 English_Support = behavior(
-    name = "Soccer Champ",
+    name = "StudyMate",
     
     instruction = """
     You are a Grade 12 NSC (South Africa) learning assistant.

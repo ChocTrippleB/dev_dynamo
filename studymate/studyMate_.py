@@ -1,78 +1,163 @@
-from openai import OpenAI
-from dotenv import load_dotenv
-import os
-from behaviors.behavior_Obj import behavior
-from flask import flash, jsonify, render_template
-from flask_cors import CORS
+# from openai import OpenAI
+# from dotenv import load_dotenv
+# import os
+# from behaviors.behavior_Obj import behavior
+# from flask import flash, jsonify, render_template
+# from flask_cors import CORS
 
+# from behaviors.English import English_Support
+# from behaviors.Zulu import Zulu_Support
+# from behaviors.xhosa import xhosa_Support
+# load_dotenv()
+
+# # Get API key from environment
+# api_key = os.getenv("OPENAI_API_KEY")
+# OpenAI.api_key = api_key
+
+# client = OpenAI()
+
+# #taking the name of the user and language to assign agent
+# Name = input("what is your name? ")
+# language = input("Which language do you speak? ")
+
+# if language == "english":
+#     prompt_agent = behavior(
+#         #name variable should be a user name not system
+#         #NB NEEDS URGENT ATTENTION
+#     name=English_Support.name,
+#     instruction=English_Support.instruction
+#     )
+
+# if language == "xhosa":
+#     prompt_agent = behavior(
+#     name=xhosa_Support.name,
+#     instruction=xhosa_Support.instruction
+# )
+
+# if language == "zulu":
+#     prompt_agent = behavior(
+#         name=Zulu_Support.name,
+#         instruction=Zulu_Support.instruction
+#     )
+
+
+# conversation_history = []
+
+# while True:
+#     user_input = input("You: ").strip()
+
+#     if user_input.lower() == "quit":
+#         print("Exiting chat. Goodbye!")
+#         break
+
+#     # Add user's message to history
+#     conversation_history.append({"role": "user", "content": user_input})
+
+#     # Build prompt string for OpenAI
+#     prompt = prompt_agent.name + "\n"+ prompt_agent.instruction + "\n"
+#     for msg in conversation_history:
+#         prompt += f"{msg['role'].capitalize()}: {msg['content']}\n"
+
+#     # Call OpenAI Responses API
+#     response = client.responses.create(
+#         model="gpt-4.1-mini",
+#         input=prompt,
+#         temperature=0.3
+#     )
+
+#     # Get assistant's reply
+#     agent_message = response.output_text.strip()
+
+#     # Print reply with agent's name
+#     print(f"{prompt_agent.name}: {agent_message}")
+
+#     # Add assistant's reply to conversation history
+#     conversation_history.append({"role": "assistant", "content": agent_message})
+
+from flask import Flask, request, jsonify
+from flask_cors import CORS
+from dotenv import load_dotenv
+from openai import OpenAI
+import os
+
+from behaviors.behavior_Obj import behavior
 from behaviors.English import English_Support
 from behaviors.Zulu import Zulu_Support
 from behaviors.xhosa import xhosa_Support
+
 load_dotenv()
 
-# Get API key from environment
 api_key = os.getenv("OPENAI_API_KEY")
-OpenAI.api_key = api_key
+if not api_key:
+    raise RuntimeError("OPENAI_API_KEY is not set in your environment")
 
-client = OpenAI()
+client = OpenAI(api_key=api_key)
 
-#taking the name of the user and language to assign agent
-Name = input("what is your name? ")
-language = input("Which language do you speak? ")
+app = Flask(__name__)
+# Allow requests from your React (Vite) dev server
+CORS(app, origins=["http://localhost:5173"])
 
-if language == "english":
-    prompt_agent = behavior(
-        #name variable should be a user name not system
-        #NB NEEDS URGENT ATTENTION
-    name=English_Support.name,
-    instruction=English_Support.instruction
+def get_prompt_agent(language: str):
+    """Pick the right behavior based on language."""
+    lang = (language or "").strip().lower()
+
+    if lang == "zulu":
+        return behavior(
+            name=Zulu_Support.name,
+            instruction=Zulu_Support.instruction
+        )
+    if lang == "xhosa":
+        return behavior(
+            name=xhosa_Support.name,
+            instruction=xhosa_Support.instruction
+        )
+    # default to English
+    return behavior(
+        name=English_Support.name,
+        instruction=English_Support.instruction
     )
 
-if language == "xhosa":
-    prompt_agent = behavior(
-    name=xhosa_Support.name,
-    instruction=xhosa_Support.instruction
-)
+@app.route("/chat", methods=["POST"])
+def chat():
+    data = request.get_json(force=True)
 
-if language == "zulu":
-    prompt_agent = behavior(
-        name=Zulu_Support.name,
-        instruction=Zulu_Support.instruction
-    )
+    messages = data.get("messages", [])
+    language = data.get("language", "english")
 
+    # Pick behavior for this language
+    prompt_agent = get_prompt_agent(language)
 
-conversation_history = []
+    # Build conversation history string
+    conversation_history = []
+    for msg in messages:
+        role = msg.get("role")
+        content = msg.get("content", "")
+        if role in ("user", "assistant"):
+            conversation_history.append({"role": role, "content": content})
 
-while True:
-    user_input = input("You: ").strip()
-
-    if user_input.lower() == "quit":
-        print("Exiting chat. Goodbye!")
-        break
-
-    # Add user's message to history
-    conversation_history.append({"role": "user", "content": user_input})
-
-    # Build prompt string for OpenAI
-    prompt = prompt_agent.name + "\n"+ prompt_agent.instruction + "\n"
+    prompt = prompt_agent.name + "\n" + prompt_agent.instruction + "\n"
     for msg in conversation_history:
         prompt += f"{msg['role'].capitalize()}: {msg['content']}\n"
 
-    # Call OpenAI Responses API
-    response = client.responses.create(
-        model="gpt-4.1-mini",
-        input=prompt,
-        temperature=0.3
-    )
+    try:
+        response = client.responses.create(
+            model="gpt-4.1-mini",
+            input=prompt,
+            temperature=0.3
+        )
 
-    # Get assistant's reply
-    agent_message = response.output_text.strip()
+        # Using the helper that was in your original code
+        assistant_reply = response.output_text.strip()
 
-    # Print reply with agent's name
-    print(f"{prompt_agent.name}: {agent_message}")
+        # Return JSON to frontend
+        return jsonify({"reply": assistant_reply})
+    except Exception as e:
+        print("Error from OpenAI:", e)
+        return jsonify({"error": "Error talking to AI"}), 500
 
-    # Add assistant's reply to conversation history
-    conversation_history.append({"role": "assistant", "content": agent_message})
+if __name__ == "__main__":
+    # Run Flask dev server
+    app.run(host="0.0.0.0", port=5000, debug=True)
 
 #test the apikey
 #print("api key : ", api_key)
